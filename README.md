@@ -2,28 +2,57 @@
 
 ## 📌 Mục tiêu
 
-Xây dựng hệ thống quản lý bán hàng theo kiến trúc **Microservices**, bao gồm các service độc lập:
+Phát triển hệ thống quản lý bán hàng theo kiến trúc **Microservices**, với mục tiêu:
 
-- **Product Service**: Quản lý sản phẩm (tên, mô tả, giá, tồn kho).
-- **Order Service**: Quản lý đơn hàng (tạo, xem, hủy, sửa đơn hàng).
-- **Customer Service**: Quản lý thông tin khách hàng (tên, địa chỉ, liên hệ).
-- **API Gateway**: Cổng giao tiếp duy nhất định tuyến đến các service con.
+- Tách biệt logic nghiệp vụ giữa các domain: Sản phẩm, Đơn hàng, Khách hàng.
+- Dễ dàng mở rộng, bảo trì, triển khai độc lập từng service.
+- Đảm bảo hiệu suất cao và khả năng mở rộng linh hoạt.
 
 ---
 
-## 🏗️ Công nghệ sử dụng
+## 🏗️ Kiến trúc hệ thống
 
-- **Node.js**, **Express.js** cho backend service.
-- **MongoDB** làm cơ sở dữ liệu (mỗi service có DB riêng).
-- **Docker & Docker Compose** để container hóa hệ thống.
-- **RESTful API** cho giao tiếp giữa các service.
-- **dotenv** cho cấu hình biến môi trường.
+Hệ thống bao gồm 4 service chính:
+
+```
++-----------------+     +------------------+     +--------------------+
+|  Product        |     |    Order         |     |    Customer        |
+|  Service        |     |    Service       |     |    Service         |
+| (Node.js + Mongo)|<-->|  (Node.js + Mongo)|<-->| (Node.js + Mongo) |
++--------^--------+     +---------^--------+     +---------^----------+
+         |                        |                        |
+         +------------------------+------------------------+
+                                  |
+                          +-------v--------+
+                          |  API Gateway   |
+                          | (Express.js)   |
+                          +-------^--------+
+                                  |
+                         +--------v--------+
+                         |     Client      |
+                         |  (React Vite)   |
+                         +-----------------+
+```
+
+- **API Gateway**: Là cầu nối duy nhất giữa client và các microservice. Nó xử lý định tuyến, gom dữ liệu từ nhiều service, kiểm tra xác thực...
+- **Frontend**: Dự kiến xây dựng bằng **React + Vite** để đảm bảo hiệu suất phát triển nhanh, hiện đại.
+
+---
+
+## 🧰 Công nghệ sử dụng
+
+- **Node.js** + **Express.js**: Xây dựng các backend service.
+- **MongoDB**: Cơ sở dữ liệu NoSQL, mỗi service có 1 DB riêng biệt.
+- **Docker & Docker Compose**: Triển khai, container hóa các service.
+- **RESTful API**: Chuẩn giao tiếp giữa các service.
+- **dotenv**: Cấu hình biến môi trường.
+- **React + Vite** _(frontend - đang triển khai)_
 
 ---
 
 ## 📁 Cấu trúc thư mục
-![image](https://github.com/user-attachments/assets/00610718-072d-490b-be42-d702a1900e3c)
 
+```
 mixi-shop-be/
 ├── api-gateway/
 │   ├── Dockerfile
@@ -75,3 +104,47 @@ mixi-shop-be/
 │
 ├── docker-compose.yml
 └── README.md
+```
+
+---
+
+## 🚀 Cách chạy hệ thống
+
+### 1. Build & khởi động với Docker
+
+```bash
+docker-compose up --build
+```
+
+Sau khi hoàn tất:
+- API Gateway: http://localhost:5000
+- Product Service: http://localhost:5001
+- Order Service: http://localhost:5002
+- Customer Service: http://localhost:5003
+- MongoDB: chạy trên cổng 27017
+
+> 💡 Yêu cầu: Cài sẵn **Docker Desktop** và **Node.js** (nếu không dùng Docker)
+
+---
+
+## 🎯 Định hướng phát triển
+
+- ✅ Tạo cấu trúc project và logic CRUD cơ bản.
+- ✅ API Gateway định tuyến đến từng service.
+- ✅ MongoDB hoạt động ổn định trong container riêng biệt.
+- ⏳ Tích hợp frontend **React Vite**.
+- ⏳ Xác thực người dùng với JWT.
+- ⏳ Tích hợp Kafka hoặc RabbitMQ để truyền thông tin giữa các service (event-driven).
+- ⏳ CI/CD với GitHub Actions.
+
+---
+
+## 🧑‍💻 Tác giả
+
+- **Sinh viên thực hiện**: Nguyen Duc Nhat
+- **Thời gian thực hiện**: Tháng 09/04/2025
+
+---
+
+📬 *Mọi góp ý hoặc hợp tác xin gửi về: [ducnhat0910@gmail.com]*  
+⭐ Nếu bạn thấy dự án hữu ích, hãy ⭐ repo này nhé!
