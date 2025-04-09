@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  product-service:
+    build: ./product-service
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URL=mongodb://host.docker.internal:27017/product_db
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGO_URL=mongodb://host.docker.internal:27017/order_db
+
+  customer-service:
+    build: ./customer-service
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGO_URL=mongodb://host.docker.internal:27017/customer_db
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - PRODUCT_SERVICE_URL=http://product-service:5001
+      - ORDER_SERVICE_URL=http://order-service:5002
+      - CUSTOMER_SERVICE_URL=http://customer-service:5003
+    depends_on:
+      - product-service
+      - order-service
+      - customer-service
+
+# mongo:
+#   image: mongo
+#   ports:
+#     - "27017:27017"
+#   volumes:
+#     - mongo_data:/data/db
+
+# volumes:
+#   mongo_data:
