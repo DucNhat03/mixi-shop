@@ -22,6 +22,8 @@ Xây dựng hệ thống quản lý bán hàng theo kiến trúc **Microservices
 ---
 
 ## 📁 Cấu trúc thư mục
+![image](https://github.com/user-attachments/assets/00610718-072d-490b-be42-d702a1900e3c)
+
 mixi-shop-be/
 ├── api-gateway/
 │   ├── Dockerfile
