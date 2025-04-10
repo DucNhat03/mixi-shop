@@ -10,29 +10,8 @@ Phát triển hệ thống quản lý bán hàng theo kiến trúc **Microservic
 
 ---
 
-## 🏗️ Kiến trúc hệ thống
+## 🏗️ Kiến trúc hệ thống (bao gồm các service):
 ![mixi-shop-microservice](https://github.com/user-attachments/assets/75b8b0a6-f393-4ce6-a224-90dc2155a4d5)
-Hệ thống bao gồm 4 service chính:
-
-```
-+-----------------+     +------------------+     +--------------------+
-|  Product        |     |    Order         |     |    Customer        |
-|  Service        |     |    Service       |     |    Service         |
-| (Node.js + Mongo)|<-->|  (Node.js + Mongo)|<-->| (Node.js + Mongo) |
-+--------^--------+     +---------^--------+     +---------^----------+
-         |                        |                        |
-         +------------------------+------------------------+
-                                  |
-                          +-------v--------+
-                          |  API Gateway   |
-                          | (Express.js)   |
-                          +-------^--------+
-                                  |
-                         +--------v--------+
-                         |     Client      |
-                         |  (React Vite)   |
-                         +-----------------+
-```
 
 - **API Gateway**: Là cầu nối duy nhất giữa client và các microservice. Nó xử lý định tuyến, gom dữ liệu từ nhiều service, kiểm tra xác thực...
 - **Frontend**: Dự kiến xây dựng bằng **React + Vite** để đảm bảo hiệu suất phát triển nhanh, hiện đại.
