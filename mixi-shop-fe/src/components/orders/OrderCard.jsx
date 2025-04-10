@@ -13,8 +13,8 @@ const getStatusColor = (status) => {
   }
 };
 
-const OrderCard = ({ order, customerName, productNames, onDetail }) => (
-  <div className="bg-gradient-to-br from-white to-blue-50 border border-gray-200 shadow-md rounded-2xl p-5">
+const OrderCard = ({ order, customerName, productNames, onDetail, onEdit }) => (
+  <div className="bg-gradient-to-br from-white to-blue-50 border border-gray-200 shadow-md rounded-2xl p-5 relative">
     <h2 className="text-lg font-bold mb-2 flex items-center gap-2">
       <Package className="text-blue-500 w-5 h-5" />
       Đơn hàng #{order._id.slice(-6)}
@@ -44,14 +44,19 @@ const OrderCard = ({ order, customerName, productNames, onDetail }) => (
         {order.status}
       </span>
     </p>
-    <div className="mt-4 flex gap-2">
+
+    {/* Fixed button container */}
+    <div className="absolute bottom-4 left-4 right-4 flex justify-between gap-2">
       <button
-        className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-sm rounded-xl"
+        className="px-3 "
         onClick={() => onDetail(order)}
       >
-        📄 Chi tiết
+        
       </button>
-      <button className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-xl">
+      <button
+        className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-xl"
+        onClick={() => onEdit(order)}
+      >
         ✏️ Chỉnh sửa
       </button>
     </div>

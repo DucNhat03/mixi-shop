@@ -13,7 +13,7 @@ const OrdersPage = () => {
   const [productsMap, setProductsMap] = useState({});
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null); 
   const pageSize = 6;
 
   useEffect(() => {
@@ -46,14 +46,31 @@ const OrdersPage = () => {
   const totalPages = Math.ceil(filteredOrders.length / pageSize);
   const currentOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
+  const handleSave = async (updatedOrder) => {
+    try {
+      await orderService.updateOrder(updatedOrder._id, updatedOrder); 
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        )
+      );
+      setSelectedOrder(null); 
+    } catch (err) {
+      console.error("Lỗi khi cập nhật đơn hàng:", err);
+    }
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">📦 Danh sách đơn hàng</h1>
 
-      <StatusFilter statusFilter={statusFilter} setStatusFilter={(status) => {
-        setStatusFilter(status);
-        setCurrentPage(1);
-      }} />
+      <StatusFilter
+        statusFilter={statusFilter}
+        setStatusFilter={(status) => {
+          setStatusFilter(status);
+          setCurrentPage(1);
+        }}
+      />
 
       {currentOrders.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
@@ -66,12 +83,17 @@ const OrdersPage = () => {
               customerName={customersMap[order.customerId] || "Không xác định"}
               productNames={productsMap}
               onDetail={setSelectedOrder}
+              onEdit={(order) => setSelectedOrder(order)} 
             />
           ))}
         </div>
       )}
 
-      <Pagination totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
 
       {selectedOrder && (
         <OrderDetailModal
@@ -79,6 +101,7 @@ const OrdersPage = () => {
           customerName={customersMap[selectedOrder.customerId]}
           productNames={productsMap}
           onClose={() => setSelectedOrder(null)}
+          onSave={handleSave}  
         />
       )}
     </div>

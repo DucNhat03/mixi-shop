@@ -7,21 +7,25 @@ const Header = () => {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-blue-600 text-white shadow-md rounded-xl mb-4">
-      <h1 className="text-xl font-bold flex items-center gap-2">
-        🛍️ MIXI SHOP
+    <header className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg rounded-xl mb-6">
+      {/* Title Section */}
+      <h1 className="text-2xl font-bold flex items-center gap-3">
+        🛍️ <span>MIXI SHOP</span>
       </h1>
 
-      <div className="flex items-center gap-4 text-sm">
-        <span>
+      {/* User Info & Logout Button */}
+      <div className="flex items-center gap-6 text-sm">
+        <span className="text-lg font-medium">
           Xin chào, <span className="font-semibold">Duc Nhat</span>
         </span>
+
+        {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1 bg-white text-blue-600 px-3 py-1 rounded-xl text-sm font-medium hover:bg-blue-100 transition"
+          className="flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-100 py-2 px-4 rounded-full text-sm font-medium transition-all duration-300"
         >
-          <LogOut className="w-4 h-4" />
-          Đăng xuất
+          <LogOut className="w-5 h-5" />
+          <span>Đăng xuất</span>
         </button>
       </div>
     </header>
