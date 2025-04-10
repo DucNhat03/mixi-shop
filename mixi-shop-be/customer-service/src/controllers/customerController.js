@@ -2,8 +2,8 @@ const Customer = require('../models/customer.model');
 
 {/* get all */}
 exports.getAll = async (req, res) => {
-  const orders = await Customer.find();
-  res.json(orders);
+  const customer = await Customer.find();
+  res.json(customer);
 };
 {/* get by id */}
 exports.getOne = async (req, res) => {

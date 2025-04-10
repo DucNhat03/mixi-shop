@@ -12,10 +12,16 @@ exports.getOne = async (req, res) => {
 };
 {/* create */}
 exports.create = async (req, res) => {
-  const newProduct = new Product(req.body);
-  const saved = await newProduct.save();
-  res.status(201).json(saved);
+  try {
+    const newProduct = new Product(req.body);
+    const saved = await newProduct.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error("Error creating product:", err);
+    res.status(500).json({ message: 'Có lỗi xảy ra khi tạo sản phẩm.' });
+  }
 };
+
 {/* update */}
 exports.update = async (req, res) => {
   const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
