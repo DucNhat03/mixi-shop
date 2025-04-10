@@ -11,7 +11,7 @@ Phát triển hệ thống quản lý bán hàng theo kiến trúc **Microservic
 ---
 
 ## 🏗️ Kiến trúc hệ thống
-
+![mixi-shop-microservice](https://github.com/user-attachments/assets/75b8b0a6-f393-4ce6-a224-90dc2155a4d5)
 Hệ thống bao gồm 4 service chính:
 
 ```
