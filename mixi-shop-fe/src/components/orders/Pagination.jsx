@@ -6,10 +6,10 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage }) => {
           <button
             key={index}
             onClick={() => setCurrentPage(index + 1)}
-            className={`px-3 py-1 border rounded-xl ${
+            className={`px-3 py-1 rounded border ${
               currentPage === index + 1
-                ? "bg-blue-500 text-white"
-                : "bg-white hover:bg-gray-100"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-blue-600 hover:bg-blue-100"
             }`}
           >
             {index + 1}
