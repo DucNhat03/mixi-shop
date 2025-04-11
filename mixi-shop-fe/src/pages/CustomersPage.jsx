@@ -66,10 +66,6 @@ const CustomersPage = () => {
         return a.name.localeCompare(b.name);
       case "name-desc":
         return b.name.localeCompare(a.name);
-      case "email-asc":
-        return a.email.localeCompare(b.email);
-      case "email-desc":
-        return b.email.localeCompare(a.email);
       default:
         return 0;
     }
@@ -104,10 +100,8 @@ const CustomersPage = () => {
             className="border px-3 py-2 rounded"
           >
             <option value="">-- Sắp xếp --</option>
-            <option value="name-asc">Tên A-Z</option>
-            <option value="name-desc">Tên Z-A</option>
-            <option value="email-asc">Email A-Z</option>
-            <option value="email-desc">Email Z-A</option>
+            <option value="name-asc">⬆️ Tên A-Z</option>
+            <option value="name-desc">⬇️ Tên Z-A</option>
           </select>
         </div>
       </div>

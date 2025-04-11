@@ -17,7 +17,7 @@ const ProductsPage = () => {
   const itemsPerPage = 6;
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState(""); // "" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc"
+  const [sortOption, setSortOption] = useState(""); 
 
   const fetchProducts = async () => {
     try {
@@ -73,16 +73,16 @@ const ProductsPage = () => {
       };
       if (isEditing && editingId) {
         await productService.updateProduct(editingId, data);
-        toast.success("✅ Đã cập nhật sản phẩm.");
+        toast.success("Đã cập nhật sản phẩm.");
       } else {
         await productService.createProduct(data);
-        toast.success("✅ Đã thêm sản phẩm mới.");
+        toast.success("Đã thêm sản phẩm mới.");
       }
       closeModal();
       fetchProducts();
       setCurrentPage(1);
     } catch {
-      toast.error("❌ Lỗi khi lưu sản phẩm.");
+      toast.error("Lỗi khi lưu sản phẩm.");
     }
   };
 
@@ -94,7 +94,7 @@ const ProductsPage = () => {
         fetchProducts();
         setCurrentPage(1);
       } catch {
-        toast.error("❌ Lỗi khi xóa sản phẩm.");
+        toast.error("Lỗi khi xóa sản phẩm.");
       }
     }
   };
@@ -152,11 +152,12 @@ const ProductsPage = () => {
             className="border rounded px-3 py-2"
           />
           <select value={sortOption} onChange={handleSortChange} className="border rounded px-3 py-2">
-            <option value="">-- Sắp xếp --</option>
-            <option value="price-asc">Giá tăng dần</option>
-            <option value="price-desc">Giá giảm dần</option>
-            <option value="stock-asc">Kho tăng dần</option>
-            <option value="stock-desc">Kho giảm dần</option>
+          <option value="">🔀 Sắp xếp </option>
+          <option value="price-asc">⬆️ Giá tăng dần</option>
+          <option value="price-desc">⬇️ Giá giảm dần</option>
+          <option value="stock-asc">⬆️ Kho tăng dần</option>
+          <option value="stock-desc">⬇️ Kho giảm dần</option>
+          
           </select>
           <button
             onClick={() => openModal()}
