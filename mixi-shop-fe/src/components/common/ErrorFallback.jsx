@@ -1,9 +1,10 @@
-import { AlertCircle, RefreshCw, Server, Clock } from 'lucide-react';
+import { AlertCircle, RefreshCw, Server, Clock, Ban } from 'lucide-react';
 
-const ErrorFallback = ({ error, resetError, isCircuitBreakerError }) => {
+const ErrorFallback = ({ error, resetError }) => {
   // Xác định loại lỗi và hiển thị thông báo phù hợp
   const getErrorContent = () => {
-    if (isCircuitBreakerError) {
+    // Circuit Breaker Error
+    if (error?.message?.includes('Service Unavailable')) {
       return {
         icon: <Server className="w-12 h-12 text-yellow-500" />,
         title: 'Service Tạm Thời Không Khả Dụng',
@@ -12,7 +13,18 @@ const ErrorFallback = ({ error, resetError, isCircuitBreakerError }) => {
       };
     }
 
-    if (error?.message?.includes('timeout')) {
+    // Rate Limiter Error
+    if (error?.message?.includes('Too Many Requests')) {
+      return {
+        icon: <Ban className="w-12 h-12 text-red-500" />,
+        title: 'Quá Nhiều Yêu Cầu',
+        message: 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.',
+        buttonText: 'Đã Hiểu'
+      };
+    }
+
+    // Timeout Error
+    if (error?.message?.includes('timeout') || error?.code === 'ECONNABORTED') {
       return {
         icon: <Clock className="w-12 h-12 text-orange-500" />,
         title: 'Yêu Cầu Hết Thời Gian',
@@ -21,6 +33,7 @@ const ErrorFallback = ({ error, resetError, isCircuitBreakerError }) => {
       };
     }
 
+    // Default Error
     return {
       icon: <AlertCircle className="w-12 h-12 text-red-500" />,
       title: 'Đã Có Lỗi Xảy Ra',

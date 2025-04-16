@@ -5,7 +5,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Import middlewares
+
 const rateLimiterMiddleware = require('./middleware/rateLimiter');
 const timeLimiterMiddleware = require('./middleware/timeLimiter');
 const retryMiddleware = require('./middleware/retry');
@@ -13,21 +13,21 @@ const retryMiddleware = require('./middleware/retry');
 app.use(cors());
 app.use(express.json());
 
-// Áp dụng Rate Limiter và Time Limiter cho toàn bộ app
+
 app.use(rateLimiterMiddleware({
-  points: 50,           // Số request tối đa
-  duration: 60,         // Trong 1 phút
-  blockDuration: 300    // Block trong 5 phút nếu vượt quá
+  points: 50,          
+  duration: 60,         
+  blockDuration: 300   
 }));
 
-app.use(timeLimiterMiddleware(5000)); // Timeout sau 5s
+app.use(timeLimiterMiddleware(5000)); 
 
-// Import routes
+
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 
-// Áp dụng retry middleware cho từng route
+
 const retryOptions = {
   retries: 3,
   minTimeout: 1000,

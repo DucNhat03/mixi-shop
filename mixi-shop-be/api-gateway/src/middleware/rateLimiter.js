@@ -2,9 +2,9 @@ const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 const rateLimiterMiddleware = (options = {}) => {
   const defaultOptions = {
-    points: 10, // Number of points
-    duration: 1, // Per second
-    blockDuration: 60 // Block for 1 minute if consumed more than points
+    points: 10, 
+    duration: 1, 
+    blockDuration: 60 
   };
 
   const rateLimiter = new RateLimiterMemory({

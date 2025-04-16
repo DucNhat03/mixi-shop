@@ -17,7 +17,6 @@ const ProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCircuitBreakerError, setIsCircuitBreakerError] = useState(false);
   const itemsPerPage = 6;
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +28,6 @@ const ProductsPage = () => {
     try {
       setIsLoading(true);
       setError(null);
-      setIsCircuitBreakerError(false);
       const res = await productService.getProducts();
       if (res && res.data) {
         setProducts(Array.isArray(res.data) ? res.data : []);
@@ -37,10 +35,21 @@ const ProductsPage = () => {
         setProducts([]);
       }
     } catch (error) {
-      setError(error.message || "Không thể lấy danh sách sản phẩm.");
-      // Kiểm tra nếu là lỗi Circuit Breaker (503)
-      setIsCircuitBreakerError(error.message?.includes('Service tạm thời không khả dụng'));
-      toast.error(error.message || "Không thể lấy danh sách sản phẩm.");
+      let errorMessage = "Không thể lấy danh sách sản phẩm.";
+      
+      if (error.response?.status === 429) {
+        errorMessage = "Quá nhiều yêu cầu. Vui lòng thử lại sau.";
+      } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        errorMessage = "Yêu cầu hết thời gian. Vui lòng thử lại.";
+      } else if (error.response?.status === 503) {
+        errorMessage = "Service tạm thời không khả dụng.";
+      }
+
+      setError({
+        ...error,
+        userMessage: errorMessage
+      });
+      toast.error(errorMessage);
       setProducts([]);
     } finally {
       setIsLoading(false);
@@ -200,7 +209,6 @@ const ProductsPage = () => {
           <ErrorFallback
             error={error}
             resetError={fetchProducts}
-            isCircuitBreakerError={isCircuitBreakerError}
           />
         </div>
       ) : products.length === 0 ? (
