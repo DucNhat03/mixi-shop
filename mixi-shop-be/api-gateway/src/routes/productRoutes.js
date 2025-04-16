@@ -1,22 +1,23 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
 const router = express.Router();
+const circuitBreakerMiddleware = require('../middleware/circuitBreaker');
 
-router.use(
-  '/',
-  createProxyMiddleware({
-    target: process.env.PRODUCT_SERVICE_URL,
-    changeOrigin: true,
-    onProxyReq: (proxyReq, req, res) => {
-      if (req.body) {
-        const bodyData = JSON.stringify(req.body);
-        proxyReq.setHeader('Content-Type', 'application/json');
-        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-        proxyReq.write(bodyData);
-      }
-    },
-  })
-);
+// URL của product service
+const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost:5001';
+
+// Circuit Breaker config
+const circuitBreakerOptions = {
+  timeout: 10000,                // 10s timeout
+  errorThresholdPercentage: 70,  // 70% lỗi để kích hoạt
+  resetTimeout: 10000,           // 10s để reset
+  volumeThreshold: 10,           // Cần ít nhất 10 request
+  errorFilter: (err) => {
+    return !err.response || err.code === 'ECONNABORTED';
+  }
+};
+
+// Sử dụng Circuit Breaker với config
+router.use('/', circuitBreakerMiddleware(PRODUCT_SERVICE_URL, circuitBreakerOptions));
 
 module.exports = router;
+

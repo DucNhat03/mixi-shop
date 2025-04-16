@@ -16,6 +16,95 @@ Phát triển hệ thống quản lý bán hàng theo kiến trúc **Microservic
 - **API Gateway**: Là cầu nối duy nhất giữa client và các microservice. Nó xử lý định tuyến, gom dữ liệu từ nhiều service, kiểm tra xác thực...
 - **Frontend**: Dự kiến xây dựng bằng **React + Vite** để đảm bảo hiệu suất phát triển nhanh, hiện đại.
 
+## 🔄 Circuit Breaker Pattern
+
+### Mục đích
+- Ngăn chặn lỗi lan truyền trong hệ thống microservices
+- Xử lý gracefully khi service bị lỗi hoặc quá tải
+- Cho phép service phục hồi mà không bị quá tải bởi requests
+
+### Triển khai
+- **Middleware**: Sử dụng `opossum` - thư viện Circuit Breaker cho Node.js
+- **Vị trí**: Được tích hợp tại API Gateway cho mỗi route đến các service
+
+### Cấu hình
+```javascript
+const circuitBreakerOptions = {
+  timeout: 3000,              // Thời gian timeout cho mỗi request
+  errorThresholdPercentage: 50, // % lỗi để kích hoạt circuit breaker
+  resetTimeout: 30000,        // Thời gian chờ trước khi thử lại (half-open)
+}
+```
+
+### Trạng thái
+1. **CLOSED** (Bình thường)
+   - Requests được chuyển tiếp bình thường đến service
+   - Theo dõi tỷ lệ lỗi
+
+2. **OPEN** (Ngắt)
+   - Kích hoạt khi vượt ngưỡng lỗi
+   - Trả về lỗi ngay lập tức
+   - Hiển thị thông báo "Service tạm thời không khả dụng"
+
+3. **HALF-OPEN** (Thử nghiệm)
+   - Sau thời gian resetTimeout
+   - Cho phép một số requests thử nghiệm
+   - Kiểm tra service đã phục hồi chưa
+
+### Frontend Integration
+- **ErrorFallback Component**: Hiển thị UI thân thiện cho người dùng khi có lỗi
+- **Trạng thái hiển thị**: 
+  1. **Trạng thái bình thường**:
+     - Hiển thị danh sách sản phẩm
+     - Có thể thêm, sửa, xóa sản phẩm
+     - Hiển thị số lượng sản phẩm (VD: "Đang hiển thị 6/15 sản phẩm")
+     
+  2. **Trạng thái lỗi**:
+     - Icon server màu vàng khi Circuit Breaker OPEN
+     - Thông báo "Service Tạm Thời Không Khả Dụng" 
+     - Message "Hệ thống đang tạm thời quá tải. Vui lòng thử lại sau vài giây."
+     - Nút "Thử Lại" để reset Circuit Breaker
+     - Thông báo nhỏ màu đỏ ở góc phải: "Service tạm thời không khả dụng. Vui lòng thử lại sau."
+
+### Xử lý lỗi thông minh
+- **Network Error**: 
+  - Hiển thị icon cảnh báo
+  - Thông báo lỗi rõ ràng
+  - Nút "Tải Lại" để thử kết nối lại
+- **Circuit Breaker States**:
+  - CLOSED: Hoạt động bình thường, hiển thị danh sách sản phẩm
+  - OPEN: Hiển thị thông báo lỗi và icon server
+  - HALF-OPEN: Thử kết nối lại sau thời gian reset
+
+### Ví dụ UI States
+1. **Normal State** (Circuit Breaker CLOSED):
+   ```
+   🛍️ Danh sách sản phẩm
+   Đang hiển thị 6/15 sản phẩm
+   [Danh sách các sản phẩm với hình ảnh, giá, tồn kho]
+   ```
+   ![Normal State](./docs/images/cb-normal-state.png)
+   *Hình 1: Trạng thái bình thường - Circuit Breaker CLOSED*
+
+2. **Error State** (Circuit Breaker OPEN):
+   ```
+   🔌 Service Tạm Thời Không Khả Dụng
+   Hệ thống đang tạm thời quá tải. Vui lòng thử lại sau vài giây.
+   [Nút Thử Lại]
+   ```
+   ![Error State](./docs/images/cb-error-state.png)
+   *Hình 2: Trạng thái lỗi - Circuit Breaker OPEN*
+
+### Monitoring và Logging
+- **UI Feedback**: 
+  - Toast notifications cho lỗi
+  - Status indicators trong header
+  - Error boundaries để catch lỗi
+- **Backend Logs**:
+  - Circuit Breaker state changes
+  - Failed requests tracking
+  - Service health monitoring
+
 ---
 
 ## 🧰 Công nghệ sử dụng

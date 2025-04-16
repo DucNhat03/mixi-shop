@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import productService from "../services/productService";
 import { toast } from "sonner";
 import { PlusCircle } from "lucide-react";
@@ -6,6 +6,7 @@ import { PlusCircle } from "lucide-react";
 import ProductCard from "../components/products/ProductCard";
 import ProductFormModal from "../components/products/ProductFormModal";
 import Pagination from "../components/products/Pagination";
+import ErrorFallback from "../components/common/ErrorFallback";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -14,21 +15,42 @@ const ProductsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isCircuitBreakerError, setIsCircuitBreakerError] = useState(false);
   const itemsPerPage = 6;
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState(""); 
+  const [sortOption, setSortOption] = useState("");
+
+  const isFetched = useRef(false);
 
   const fetchProducts = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
+      setIsCircuitBreakerError(false);
       const res = await productService.getProducts();
-      setProducts(res.data);
-    } catch {
-      toast.error("Không thể lấy danh sách sản phẩm.");
+      if (res && res.data) {
+        setProducts(Array.isArray(res.data) ? res.data : []);
+      } else {
+        setProducts([]);
+      }
+    } catch (error) {
+      setError(error.message || "Không thể lấy danh sách sản phẩm.");
+      // Kiểm tra nếu là lỗi Circuit Breaker (503)
+      setIsCircuitBreakerError(error.message?.includes('Service tạm thời không khả dụng'));
+      toast.error(error.message || "Không thể lấy danh sách sản phẩm.");
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    if (isFetched.current) return;
+    isFetched.current = true;
+    
     fetchProducts();
   }, []);
 
@@ -152,12 +174,11 @@ const ProductsPage = () => {
             className="border rounded px-3 py-2"
           />
           <select value={sortOption} onChange={handleSortChange} className="border rounded px-3 py-2">
-          <option value="">🔀 Sắp xếp </option>
-          <option value="price-asc">⬆️ Giá tăng dần</option>
-          <option value="price-desc">⬇️ Giá giảm dần</option>
-          <option value="stock-asc">⬆️ Kho tăng dần</option>
-          <option value="stock-desc">⬇️ Kho giảm dần</option>
-          
+            <option value="">🔀 Sắp xếp </option>
+            <option value="price-asc">⬆️ Giá tăng dần</option>
+            <option value="price-desc">⬇️ Giá giảm dần</option>
+            <option value="stock-asc">⬆️ Kho tăng dần</option>
+            <option value="stock-desc">⬇️ Kho giảm dần</option>
           </select>
           <button
             onClick={() => openModal()}
@@ -169,7 +190,20 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      {products.length === 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600">Đang tải dữ liệu...</span>
+        </div>
+      ) : error ? (
+        <div className="flex justify-center py-10">
+          <ErrorFallback
+            error={error}
+            resetError={fetchProducts}
+            isCircuitBreakerError={isCircuitBreakerError}
+          />
+        </div>
+      ) : products.length === 0 ? (
         <p>Không có sản phẩm nào.</p>
       ) : (
         <>

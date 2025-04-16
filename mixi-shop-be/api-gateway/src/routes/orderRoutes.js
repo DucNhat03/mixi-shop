@@ -1,22 +1,11 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
 const router = express.Router();
+const circuitBreakerMiddleware = require('../middleware/circuitBreaker');
 
-router.use(
-  '/',
-  createProxyMiddleware({
-    target: process.env.ORDER_SERVICE_URL,
-    changeOrigin: true,
-    onProxyReq: (proxyReq, req, res) => {
-      if (req.body) {
-        const bodyData = JSON.stringify(req.body);
-        proxyReq.setHeader('Content-Type', 'application/json');
-        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-        proxyReq.write(bodyData);
-      }
-    },
-  })
-);
+// URL của order service
+const ORDER_SERVICE_URL = process.env.ORDER_SERVICE_URL || 'http://localhost:5002';
+
+// Sử dụng Circuit Breaker
+router.use('/', circuitBreakerMiddleware(ORDER_SERVICE_URL));
 
 module.exports = router;
