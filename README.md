@@ -84,7 +84,23 @@ mixi-shop-be/
 ## 🛡️ Resilience Patterns
 
 ### 1. Circuit Breaker Pattern
+1. **Normal State** (Circuit Breaker CLOSED):
+   ```
+   🛍️ Danh sách sản phẩm
+   Đang hiển thị 6/15 sản phẩm
+   [Danh sách các sản phẩm với hình ảnh, giá, tồn kho]
+   ```
+   ![image](https://github.com/user-attachments/assets/4ad24646-1769-4347-b9e5-7423822f5733)
+   *Hình 1: Trạng thái bình thường - Circuit Breaker CLOSED*
 
+2. **Error State** (Circuit Breaker OPEN):
+   ```
+   🔌 Service Tạm Thời Không Khả Dụng
+   Hệ thống đang tạm thời quá tải. Vui lòng thử lại sau vài giây.
+   [Nút Thử Lại]
+   ```
+   ![image](https://github.com/user-attachments/assets/9069036b-44bc-46e2-ad01-3d0af8a84887)
+   *Hình 2: Trạng thái lỗi - Circuit Breaker OPEN*
 #### Mục đích
 - Ngăn chặn lỗi lan truyền trong hệ thống microservices
 - Xử lý gracefully khi service bị lỗi hoặc quá tải
